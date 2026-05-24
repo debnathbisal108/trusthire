@@ -29,7 +29,7 @@ pillow==11.0.0
 # pytesseract is optional — install if needed via render build command
 
 # ── Email ──────────────────────────────────────────────────────
-resend==2.5.0
+resend>=2.5.1
 
 # ── Security ───────────────────────────────────────────────────
 cryptography==43.0.3
