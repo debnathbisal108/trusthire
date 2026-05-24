@@ -13,7 +13,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from config import settings
+from .config import settings
 from database import engine, Base
 from middleware.audit import AuditMiddleware
 from middleware.rate_limit import RateLimitMiddleware
