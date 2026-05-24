@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # Database
-    database_url: str = "postgresql://neondb_owner:npg_KpVlXmcsr7D0@ep-little-smoke-aq8kybpg.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require"
-    redis_url: str = "rediss://default:********@creative-dolphin-96423.upstash.io:6379"
+    database_url: str
+    redis_url: str
 
     # Auth
     nextauth_secret: str = ""
@@ -47,14 +47,14 @@ class Settings(BaseSettings):
     # ── Vector DB ─────────────────────────────────────────────────────────
     # Local:        http://qdrant:6333
     # Qdrant Cloud: https://xxxx.us-east4-0.gcp.cloud.qdrant.io
-    qdrant_url: str = "http://qdrant:6333"
-    qdrant_api_key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6NDE5ODUzY2MtMjc1MS00N2Y5LThkZjctMTE2MzFhMTNjZjQwIn0.biGgsZBdHIX4ZSYjqzpOGQD-l5PId6pQVCMNd9lNL5U"
+    qdrant_url: str = "https://60be325c-1cb9-4b61-88cc-f09ac03c4375.sa-east-1-0.aws.cloud.qdrant.io"
+    qdrant_api_key: str = ""
 
     # ── Twilio ────────────────────────────────────────────────────────────
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
     twilio_phone_number: str = ""
-    webhook_base_url: str = "http://localhost:8000"
+    webhook_base_url: str = "https://trusthire-bdbp.onrender.com"
 
     # ── Email ─────────────────────────────────────────────────────────────
     email_provider: str = "smtp"
