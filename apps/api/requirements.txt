@@ -12,7 +12,7 @@ psycopg2-binary==2.9.10
 # ── Queue ──────────────────────────────────────────────────────
 celery==5.4.0
 redis==5.2.0
-redbeat==2.2.0
+celery-redbeat==2.2.0
 
 # ── AI / LLM (cloud APIs — no local model needed) ─────────────
 langchain==0.3.7
