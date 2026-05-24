@@ -7,16 +7,16 @@ class Settings(BaseSettings):
 
     # App
     environment: str = "development"
-    domain: str = "localhost"
-    frontend_url: str = "http://localhost:3000"
+    domain: str = "trusthire-bdbp.onrender.com"
+    frontend_url: str = "https://trusthire-bdbp.onrender.com"
     log_level: str = "INFO"
 
     # Database
-    database_url: str = "postgresql+asyncpg://trusthire:password@postgres:5432/trusthire"
-    redis_url: str = "redis://:password@redis:6379/0"
+    database_url: str = "postgresql://neondb_owner:npg_KpVlXmcsr7D0@ep-little-smoke-aq8kybpg.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    redis_url: str = "rediss://default:********@creative-dolphin-96423.upstash.io:6379"
 
     # Auth
-    nextauth_secret: str = "change-me-in-production-min-32-chars!!"
+    nextauth_secret: str = ""
     jwt_algorithm: str = "HS256"
 
     # ── LLM ───────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     # Local:        http://qdrant:6333
     # Qdrant Cloud: https://xxxx.us-east4-0.gcp.cloud.qdrant.io
     qdrant_url: str = "http://qdrant:6333"
-    qdrant_api_key: str = ""
+    qdrant_api_key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6NDE5ODUzY2MtMjc1MS00N2Y5LThkZjctMTE2MzFhMTNjZjQwIn0.biGgsZBdHIX4ZSYjqzpOGQD-l5PId6pQVCMNd9lNL5U"
 
     # ── Twilio ────────────────────────────────────────────────────────────
     twilio_account_sid: str = ""
