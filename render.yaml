@@ -1,0 +1,220 @@
+# render.yaml — Deploy TrustHire AI to Render
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Deploy with:
+# 1. Push this repo to GitHub
+# 2. Go to render.com → New → Blueprint
+# 3. Connect your repo — Render reads this file automatically
+
+services:
+  # ── Next.js Frontend ────────────────────────────────────────────────────
+  - type: web
+    name: trusthire-web
+    runtime: node
+    region: oregon
+    plan: starter          # $7/month — never sleeps
+    rootDir: apps/web
+    buildCommand: npm ci && npm run build
+    startCommand: node .next/standalone/server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXTAUTH_URL
+        fromService:
+          type: web
+          name: trusthire-web
+          property: hostURL
+      - key: NEXTAUTH_SECRET
+        sync: false        # fill in Render dashboard
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: trusthire-api
+          property: hostURL
+      - key: DATABASE_URL
+        sync: false        # Neon connection string
+
+  # ── FastAPI Backend ──────────────────────────────────────────────────────
+  - type: web
+    name: trusthire-api
+    runtime: python
+    region: oregon
+    plan: starter          # $7/month — never sleeps
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --workers 2
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: WARNING
+      - key: DATABASE_URL
+        sync: false        # Neon postgresql+asyncpg://...
+      - key: REDIS_URL
+        sync: false        # Upstash rediss://...
+      - key: NEXTAUTH_SECRET
+        sync: false        # same value as web service
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: LLM_PROVIDER
+        value: openai
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WHISPER_PROVIDER
+        value: openai
+      - key: S3_ENDPOINT_URL
+        sync: false        # https://ACCOUNT.r2.cloudflarestorage.com
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET
+        value: trusthire-documents
+      - key: S3_REGION
+        value: auto
+      - key: QDRANT_URL
+        sync: false        # https://xxx.cloud.qdrant.io
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: WEBHOOK_BASE_URL
+        fromService:
+          type: web
+          name: trusthire-api
+          property: hostURL
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: trusthire-web
+          property: hostURL
+
+  # ── Celery Worker (parsing) ──────────────────────────────────────────────
+  - type: worker
+    name: trusthire-worker-parsing
+    runtime: python
+    region: oregon
+    plan: starter          # $7/month
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A tasks.celery_app worker -Q parsing -c 2 -l warning
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: LLM_PROVIDER
+        value: openai
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET
+        value: trusthire-documents
+      - key: S3_REGION
+        value: auto
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      - key: NEXTAUTH_SECRET
+        sync: false
+
+  # ── Celery Worker (verification + email + reports) ───────────────────────
+  - type: worker
+    name: trusthire-worker-verification
+    runtime: python
+    region: oregon
+    plan: starter          # $7/month
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A tasks.celery_app worker -Q verification,email,reports -c 4 -l warning
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: LLM_PROVIDER
+        value: openai
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET
+        value: trusthire-documents
+      - key: S3_REGION
+        value: auto
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: NEXTAUTH_SECRET
+        sync: false
+
+  # ── Celery Beat (scheduled tasks) ───────────────────────────────────────
+  - type: cron
+    name: trusthire-beat
+    runtime: python
+    region: oregon
+    plan: starter
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    schedule: "0 9 * * 1-5"    # 9 AM weekdays UTC — triggers retry tasks
+    startCommand: celery -A tasks.celery_app call tasks.retry_pending && celery -A tasks.celery_app call tasks.send_followups
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: LLM_PROVIDER
+        value: openai
+      - key: OPENAI_API_KEY
+        sync: false

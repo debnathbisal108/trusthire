@@ -1,0 +1,49 @@
+# ─────────────────────────────────────────────────────────────
+# Dockerfile.api  — FastAPI + Celery workers
+# ─────────────────────────────────────────────────────────────
+FROM python:3.12-slim AS api
+
+WORKDIR /app
+
+# System dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagic1 \
+    poppler-utils \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    libgl1-mesa-glx \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libgdk-pixbuf-2.0-0 \
+    shared-mime-info \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python deps
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source
+COPY . .
+
+# Create __init__ files for middleware package
+RUN touch middleware/__init__.py \
+    services/__init__.py \
+    services/ai/__init__.py \
+    services/resume_parser/__init__.py \
+    services/storage/__init__.py \
+    services/email/__init__.py \
+    services/fraud/__init__.py \
+    services/reporting/__init__.py \
+    services/compliance/__init__.py \
+    routers/__init__.py \
+    tasks/__init__.py \
+    migrations/__init__.py
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "--loop", "uvloop"]
