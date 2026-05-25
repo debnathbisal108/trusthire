@@ -209,7 +209,7 @@ class EducationRecord(Base):
     institution_country  = Column(String(100), nullable=True)
     accreditation_body   = Column(String(255), nullable=True)
     verification_status  = Column(String(50), default="pending")
-    verified_at          = Column(TIMESTAMPTZ, nullable=True)
+    verified_at          = Column(DateTime(timezone=True), nullable=True)
     verified_by          = Column(String(50), nullable=True)
     confidence_score     = Column(Integer, nullable=True)
     notes                = Column(Text, nullable=True)
