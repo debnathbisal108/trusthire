@@ -7,9 +7,9 @@ import uuid
 from datetime import datetime
 from sqlalchemy import (
     Column, String, Text, Integer, SmallInteger, Boolean,
-    ForeignKey, Float, Date,
+    ForeignKey, Float, Date, DateTime, 
 )
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMPTZ, INET, JSONB
+from sqlalchemy.dialects.postgresql import UUID, INET, JSONB
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -26,9 +26,9 @@ class Organization(Base):
     slug       = Column(String(100), unique=True, nullable=False)
     plan       = Column(String(50), default="starter")
     settings   = Column(JSONB, default=dict)
-    created_at = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
-    deleted_at = Column(TIMESTAMPTZ, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     users      = relationship("User", back_populates="organization")
     candidates = relationship("Candidate", back_populates="organization")
@@ -49,10 +49,10 @@ class User(Base):
     avatar_url      = Column(Text, nullable=True)
     role            = Column(String(50), nullable=False, default="recruiter")
     is_active       = Column(Boolean, default=True)
-    last_login      = Column(TIMESTAMPTZ, nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at      = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
-    deleted_at      = Column(TIMESTAMPTZ, nullable=True)
+    last_login      = Column(DateTime(timezone=True), nullable=True)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at      = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    deleted_at      = Column(DateTime(timezone=True), nullable=True)
 
     organization = relationship("Organization", back_populates="users")
 
@@ -76,9 +76,9 @@ class Candidate(Base):
     status          = Column(String(50), default="pending", nullable=False)
     risk_score      = Column(SmallInteger, nullable=True)
     risk_level      = Column(String(20), nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at      = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
-    deleted_at      = Column(TIMESTAMPTZ, nullable=True)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at      = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+    deleted_at      = Column(DateTime(timezone=True), nullable=True)
 
     organization       = relationship("Organization", back_populates="candidates")
     documents          = relationship("Document", back_populates="candidate", lazy="selectin")
@@ -108,8 +108,8 @@ class Document(Base):
     ocr_text     = Column(Text, nullable=True)
     ocr_confidence = Column(Float, nullable=True)
     scan_status  = Column(String(30), default="pending")
-    scanned_at   = Column(TIMESTAMPTZ, nullable=True)
-    created_at   = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    scanned_at   = Column(DateTime(timezone=True), nullable=True)
+    created_at   = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     candidate = relationship("Candidate", back_populates="documents")
 
@@ -128,10 +128,10 @@ class VerificationRequest(Base):
     status          = Column(String(50), default="pending", nullable=False)
     config          = Column(JSONB, default=dict)
     celery_task_id  = Column(String(255), nullable=True)
-    started_at      = Column(TIMESTAMPTZ, nullable=True)
-    completed_at    = Column(TIMESTAMPTZ, nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at      = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
+    started_at      = Column(DateTime(timezone=True), nullable=True)
+    completed_at    = Column(DateTime(timezone=True), nullable=True)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at      = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
     candidate = relationship("Candidate", back_populates="verification_requests")
 
@@ -147,14 +147,14 @@ class ConsentRecord(Base):
     candidate_id = Column(UUID(as_uuid=True), ForeignKey("candidates.id", ondelete="CASCADE"), nullable=False)
     consent_type = Column(String(100), nullable=False)
     status       = Column(String(30), nullable=False, default="pending")
-    granted_at   = Column(TIMESTAMPTZ, nullable=True)
-    revoked_at   = Column(TIMESTAMPTZ, nullable=True)
-    expires_at   = Column(TIMESTAMPTZ, nullable=True)
+    granted_at   = Column(DateTime(timezone=True), nullable=True)
+    revoked_at   = Column(DateTime(timezone=True), nullable=True)
+    expires_at   = Column(DateTime(timezone=True), nullable=True)
     ip_address   = Column(INET, nullable=True)
     user_agent   = Column(Text, nullable=True)
     consent_text = Column(Text, nullable=False)
     version      = Column(String(20), default="1.0")
-    created_at   = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    created_at   = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     candidate = relationship("Candidate", back_populates="consent_records")
 
@@ -178,15 +178,15 @@ class EmploymentRecord(Base):
     hr_email            = Column(String(255), nullable=True)
     hr_phone            = Column(String(100), nullable=True)
     verification_status = Column(String(50), default="pending")
-    verified_at         = Column(TIMESTAMPTZ, nullable=True)
+    verified_at         = Column(DateTime(timezone=True), nullable=True)
     verified_by         = Column(String(50), nullable=True)
     verifier_name       = Column(String(255), nullable=True)
     confidence_score    = Column(Integer, nullable=True)
     notes               = Column(Text, nullable=True)
     is_suspicious       = Column(Boolean, default=False)
     fraud_reasons       = Column(JSONB, default=list)
-    created_at          = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at          = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at          = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at          = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
     candidate   = relationship("Candidate", back_populates="employment_records")
     email_logs  = relationship("EmailLog", back_populates="employment_record")
@@ -215,8 +215,8 @@ class EducationRecord(Base):
     notes                = Column(Text, nullable=True)
     is_suspicious        = Column(Boolean, default=False)
     fraud_reasons        = Column(JSONB, default=list)
-    created_at           = Column(TIMESTAMPTZ, default=datetime.utcnow)
-    updated_at           = Column(TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at           = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at           = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
     candidate = relationship("Candidate", back_populates="education_records")
 
@@ -237,14 +237,14 @@ class EmailLog(Base):
     body_html               = Column(Text, nullable=True)
     status                  = Column(String(30), default="pending")
     provider_message_id     = Column(String(255), nullable=True)
-    opened_at               = Column(TIMESTAMPTZ, nullable=True)
-    replied_at              = Column(TIMESTAMPTZ, nullable=True)
+    opened_at               = Column(DateTime(timezone=True), nullable=True)
+    replied_at              = Column(DateTime(timezone=True), nullable=True)
     reply_text              = Column(Text, nullable=True)
     reply_verified          = Column(Boolean, nullable=True)
     ai_summary              = Column(Text, nullable=True)
     followup_count          = Column(Integer, default=0)
-    sent_at                 = Column(TIMESTAMPTZ, nullable=True)
-    created_at              = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    sent_at                 = Column(DateTime(timezone=True), nullable=True)
+    created_at              = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     employment_record = relationship("EmploymentRecord", back_populates="email_logs")
 
@@ -265,9 +265,9 @@ class FraudFlag(Base):
     ai_reasoning    = Column(Text, nullable=True)
     requires_review = Column(Boolean, default=True)
     reviewed_by     = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    reviewed_at     = Column(TIMESTAMPTZ, nullable=True)
+    reviewed_at     = Column(DateTime(timezone=True), nullable=True)
     review_outcome  = Column(String(50), nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     candidate = relationship("Candidate", back_populates="fraud_flags")
 
@@ -291,7 +291,7 @@ class RiskScore(Base):
     score_breakdown         = Column(JSONB, nullable=False, default=dict)
     confidence              = Column(Float, nullable=False, default=0.8)
     ai_reasoning            = Column(Text, nullable=True)
-    calculated_at           = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    calculated_at           = Column(DateTime(timezone=True), default=datetime.utcnow)
     model_version           = Column(String(50), default="1.0")
 
     candidate = relationship("Candidate", back_populates="risk_scores")
@@ -315,7 +315,7 @@ class AuditLog(Base):
     new_values      = Column(JSONB, nullable=True)
     ip_address      = Column(INET, nullable=True)
     user_agent      = Column(Text, nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -333,5 +333,5 @@ class Notification(Base):
     message         = Column(Text, nullable=True)
     data            = Column(JSONB, default=dict)
     is_read         = Column(Boolean, default=False)
-    read_at         = Column(TIMESTAMPTZ, nullable=True)
-    created_at      = Column(TIMESTAMPTZ, default=datetime.utcnow)
+    read_at         = Column(DateTime(timezone=True), nullable=True)
+    created_at      = Column(DateTime(timezone=True), default=datetime.utcnow)
