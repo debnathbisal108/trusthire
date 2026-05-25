@@ -16,13 +16,13 @@ from ..database import get_db
 from ..middleware.auth import get_current_user, require_roles
 from ..middleware.audit import audit_log
 from ..models import Candidate, Document, FraudFlag
-from schemas import (
+from ..schemas import (
     CandidateListItem,
     CandidateListResponse,
     CandidateOut,
     MessageResponse,
 )
-from security import encrypt_pii, decrypt_pii
+from ..security import encrypt_pii, decrypt_pii
 from ..services.storage.minio_client import upload_file, get_signed_url
 
 logger = logging.getLogger(__name__)
