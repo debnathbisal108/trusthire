@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from ..database import get_db
 from ..models import User
-from security import decode_jwt
+from ..security import decode_jwt
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
