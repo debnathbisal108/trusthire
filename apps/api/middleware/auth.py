@@ -7,8 +7,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from database import get_db
-from models import User
+from ..database import get_db
+from ..models import User
 from security import decode_jwt
 
 bearer_scheme = HTTPBearer(auto_error=False)
