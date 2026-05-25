@@ -11,8 +11,8 @@ from datetime import datetime
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..tests.database import AsyncSessionLocal
-from ..tests.models import AuditLog
+from ..database import AsyncSessionLocal
+from ..models import AuditLog
 
 logger = logging.getLogger("audit")
 
