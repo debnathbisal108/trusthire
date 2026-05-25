@@ -23,7 +23,7 @@ from schemas import (
     MessageResponse,
 )
 from security import encrypt_pii, decrypt_pii
-from services.storage.minio_client import upload_file, get_signed_url
+from ..services.storage.minio_client import upload_file, get_signed_url
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/candidates", tags=["candidates"])
