@@ -12,10 +12,10 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
-from middleware.auth import get_current_user, require_roles
-from middleware.audit import audit_log
-from models import Candidate, Document, FraudFlag
+from ..database import get_db
+from ..middleware.auth import get_current_user, require_roles
+from ..middleware.audit import audit_log
+from ..models import Candidate, Document, FraudFlag
 from schemas import (
     CandidateListItem,
     CandidateListResponse,
