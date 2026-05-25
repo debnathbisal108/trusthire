@@ -11,7 +11,7 @@ from typing import Optional
 from cryptography.fernet import Fernet, InvalidToken
 from jose import JWTError, jwt
 
-from config import settings
+from .config import settings
 
 
 # ─────────────────────────────────────────────────────────────────────────────
