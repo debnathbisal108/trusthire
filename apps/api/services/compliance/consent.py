@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import select, update
 
-from database import AsyncSessionLocal
-from middleware.audit import audit_log
-from models import ConsentRecord
+from ...database import AsyncSessionLocal
+from ...middleware.audit import audit_log
+from ...models import ConsentRecord
 
 logger = logging.getLogger(__name__)
 
