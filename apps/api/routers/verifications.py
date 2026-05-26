@@ -9,12 +9,12 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...database import get_db
+from ..database import get_db
 from ..middleware.auth import get_current_user, require_roles
-from ...middleware.audit import audit_log
-from ...models import Candidate, VerificationRequest
-from ...schemas import MessageResponse, VerificationCreate, VerificationOut
-from ...services.compliance.consent import verify_consents_for_verification, ConsentMissingError, ConsentExpiredError
+from ..middleware.audit import audit_log
+from ..models import Candidate, VerificationRequest
+from ..schemas import MessageResponse, VerificationCreate, VerificationOut
+from ..services.compliance.consent import verify_consents_for_verification, ConsentMissingError, ConsentExpiredError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/verifications", tags=["verifications"])
