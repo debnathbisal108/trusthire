@@ -215,8 +215,8 @@ async def get_report_pdf_url(
 # COMPLIANCE ROUTER
 # ─────────────────────────────────────────────────────────────────────────────
 
-from models import AuditLog
-from schemas import AuditLogOut
+from ..models import AuditLog
+from ..schemas import AuditLogOut
 
 compliance_router = APIRouter(prefix="/compliance", tags=["compliance"])
 
@@ -248,8 +248,8 @@ async def get_audit_logs(
 # NOTIFICATIONS ROUTER
 # ─────────────────────────────────────────────────────────────────────────────
 
-from models import Notification
-from schemas import NotificationOut
+from ..models import Notification
+from ..schemas import NotificationOut
 
 notifications_router = APIRouter(prefix="/notifications", tags=["notifications"])
 
