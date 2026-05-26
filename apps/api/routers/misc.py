@@ -8,12 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import get_db
-from middleware.auth import get_current_user
-from middleware.audit import audit_log
-from models import ConsentRecord, Candidate
-from schemas import ConsentGrant, ConsentOut, MessageResponse
-from services.compliance.consent import (
+from ..database import get_db
+from ..middleware.auth import get_current_user
+from ..middleware.audit import audit_log
+from ..models import ConsentRecord, Candidate
+from ..schemas import ConsentGrant, ConsentOut, MessageResponse
+from ..services.compliance.consent import (
     CONSENT_DEFINITIONS,
     grant_consent,
     revoke_consent,
