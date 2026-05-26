@@ -158,8 +158,8 @@ async def review_fraud_flag(
 # REPORTS ROUTER
 # ─────────────────────────────────────────────────────────────────────────────
 
-from schemas import RiskScoreOut
-from models import RiskScore
+from ..schemas import RiskScoreOut
+from ..models import RiskScore
 from sqlalchemy import select as _select
 
 reports_router = APIRouter(prefix="/candidates/{candidate_id}", tags=["reports"])
