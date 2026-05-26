@@ -98,8 +98,8 @@ async def revoke_candidate_consent(
 # ─────────────────────────────────────────────────────────────────────────────
 
 from datetime import datetime
-from models import FraudFlag, User
-from schemas import FraudFlagOut, FraudFlagReview
+from ..models import FraudFlag, User
+from ..schemas import FraudFlagOut, FraudFlagReview
 
 fraud_router = APIRouter(prefix="/fraud-flags", tags=["fraud"])
 
