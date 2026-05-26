@@ -7,7 +7,7 @@ Switch by changing S3_* env vars — zero code changes.
 
 import logging
 from datetime import datetime, timedelta
-from config import settings
+from ..config import settings
 
 logger = logging.getLogger(__name__)
 
