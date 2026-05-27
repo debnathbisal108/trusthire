@@ -5,7 +5,7 @@ Set LLM_PROVIDER env var to switch — zero code changes needed.
 """
 
 import logging
-from config import settings
+from ...config import settings
 
 logger = logging.getLogger(__name__)
 
