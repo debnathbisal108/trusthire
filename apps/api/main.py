@@ -114,12 +114,12 @@ async def generic_handler(request: Request, exc: Exception):
 # ── System endpoints ──────────────────────────────────────────────────────────
 @app.get("/health", tags=["system"])
 async def health():
-    from .services.ai.model_router import get_provider_info
+    from .services.ai.model_router import get_llm
     return {
         "status": "ok",
         "version": "1.1.0",
         "environment": settings.environment,
-        "llm": get_provider_info(),
+        "llm": get_llm(),
     }
 
 
