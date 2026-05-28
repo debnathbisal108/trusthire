@@ -3,15 +3,16 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { Pool } from "pg";
 import PostgresAdapter from "@auth/pg-adapter";
-import { authConfig as edgeConfig } from "./auth-edge";   // ← Import from edge file
+import { authConfig as edgeConfig } from "./auth-edge";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-export const { handlers, signIn, signOut } = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
   ...edgeConfig,
+
   adapter: PostgresAdapter(pool),
 
   providers: [
@@ -28,7 +29,6 @@ export const { handlers, signIn, signOut } = NextAuth({
     ...edgeConfig.callbacks,
 
     async signIn({ user, account }) {
-      // Your existing signIn logic (unchanged)
       if (account?.provider === "google" && user.email) {
         try {
           const client = await pool.connect();
@@ -41,10 +41,9 @@ export const { handlers, signIn, signOut } = NextAuth({
             if (existing.rows.length === 0) {
               await client.query("BEGIN");
               const orgName = user.name ? `${user.name.split(" ")[0]}'s Workspace` : "My Workspace";
-              const slug =
-                user.email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase() +
-                "-" +
-                Math.random().toString(36).slice(2, 6);
+              const slug = user.email.split("@")[0]
+                .replace(/[^a-z0-9]/gi, "-")
+                .toLowerCase() + "-" + Math.random().toString(36).slice(2, 6);
 
               const orgResult = await client.query(
                 "INSERT INTO organizations (name, slug) VALUES ($1, $2) RETURNING id",
@@ -56,7 +55,11 @@ export const { handlers, signIn, signOut } = NextAuth({
               await client.query(
                 `INSERT INTO users (google_id, email, full_name, avatar_url, organization_id, role)
                  VALUES ($1, $2, $3, $4, $5, 'org_admin')
-                 ON CONFLICT (email) DO UPDATE SET google_id = $1, organization_id = $5, full_name = $3, avatar_url = $4`,
+                 ON CONFLICT (email) DO UPDATE SET 
+                   google_id = $1, 
+                   organization_id = $5, 
+                   full_name = $3, 
+                   avatar_url = $4`,
                 [account.providerAccountId, user.email, user.name, user.image, orgId]
               );
               await client.query("COMMIT");
