@@ -1,16 +1,16 @@
-// lib/auth-edge.ts   ← NEW FILE (for middleware only)
+// lib/auth-edge.ts
 import NextAuth from "next-auth";
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
-  providers: [], // Empty — only for types
+  providers: [],
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token }) {
       return token;
     },
     async session({ session, token }) {
-      if (token?.userId) {
+      if (token) {
         session.user.id = token.userId as string;
         (session.user as any).organizationId = token.organizationId;
         (session.user as any).role = token.role;
