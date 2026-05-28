@@ -1,5 +1,5 @@
 // middleware.ts
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth-edge";   // ← Important: Import from edge file
 import { NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = ["/", "/login", "/privacy", "/terms"];
@@ -25,7 +25,6 @@ export default auth((req) => {
 
   const userRole = (req.auth.user as any)?.role ?? "";
 
-  // Role protection
   if (pathname.startsWith("/admin") && !["org_admin", "super_admin"].includes(userRole)) {
     return NextResponse.redirect(new URL("/dashboard?error=unauthorized", req.url));
   }
