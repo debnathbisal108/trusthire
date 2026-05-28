@@ -5,9 +5,23 @@ import { Pool } from "pg";
 import PostgresAdapter from "@auth/pg-adapter";
 import { authConfig as edgeConfig } from "./auth-edge";
 
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+// });
+
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  max: 5,                    // Reduced for Render free tier
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 15000,
+  // Add this to help with Render's environment
+  application_name: "trusthire-web",
+  keepAlive: true,
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
