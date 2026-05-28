@@ -9,10 +9,11 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit"
   },
-  "dependencies": {
+  "dependencies": 
+  {
     "next": "15.0.3",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "next-auth": "5.0.0-beta.25",
     "@auth/pg-adapter": "^1.5.0",
     "pg": "^8.13.1",
