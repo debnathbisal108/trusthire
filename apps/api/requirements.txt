@@ -19,6 +19,11 @@ langchain==0.3.7
 langchain-community==0.3.5
 langchain-openai==0.2.9
 
+langchain-groq==0.2.1
+langchain-google-genai==2.0.7
+langchain-cohere==0.3.1
+groq==0.11.0
+
 # ── Embeddings (lightweight, no torch needed) ──────────────────
 qdrant-client==1.12.0
 
