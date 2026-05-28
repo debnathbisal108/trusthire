@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { apiClient } from "@/lib/api-client";
 import { RiskBadge } from "@/components/candidates/RiskBadge";
-import { StatusBadge } from "@/components/candidates/StatusBadge";
+// import { StatusBadge } from "@/components/candidates/StatusBadge";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowRight, AlertTriangle } from "lucide-react";
 
