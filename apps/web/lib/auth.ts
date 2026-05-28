@@ -25,9 +25,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
 
-  // 🔥 Important fixes for Render.com
+  // 🔥 Fixes for Render.com + UntrustedHost
   trustHost: true,
-  baseUrl: process.env.NEXTAUTH_URL || "https://trusthire-frontend.onrender.com",
 
   callbacks: {
     ...edgeConfig.callbacks,
