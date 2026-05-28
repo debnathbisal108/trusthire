@@ -22,18 +22,27 @@ class Settings(BaseSettings):
     # ── LLM ───────────────────────────────────────────────────────────────
     # Local dev:   LLM_PROVIDER=ollama  LLM_MODEL=llama3.2:8b
     # Render/prod: LLM_PROVIDER=openai  OPENAI_API_KEY=sk-...
-    llm_provider: str = "openai"           # default to openai for Render
-    llm_model: str = "gpt-4o-mini"        # cheap + fast
+    # llm_provider: str = "openai"           # default to openai for Render
+    # llm_model: str = "gpt-4o-mini"        # cheap + fast
     ollama_base_url: str = "http://ollama:11434"
     openai_api_key: str = ""
 
     # ── STT / TTS (cloud only on Render — local on VPS) ──────────────────
     # Render: use OpenAI Whisper API  (set WHISPER_PROVIDER=openai)
     # VPS:    use faster-whisper      (set WHISPER_PROVIDER=local)
-    whisper_provider: str = "openai"       # openai | local
+    # whisper_provider: str = "openai"       # openai | local
     whisper_model_size: str = "base"       # only used when provider=local
     piper_model_path: str = "/models/piper/en_US-amy-medium.onnx"
 
+    llm_provider: str = "groq"
+    llm_model: str = "llama-3.3-70b-versatile"
+    groq_api_key: str = ""
+    gemini_api_key: str = ""
+    cohere_api_key: str = ""
+    mistral_api_key: str = ""
+    openai_api_key: str = ""        # kept but optional now
+    whisper_provider: str = "groq"
+    
     # ── S3-compatible storage ─────────────────────────────────────────────
     # Cloudflare R2: set S3_ENDPOINT_URL=https://ACCOUNT.r2.cloudflarestorage.com
     # Local MinIO:   set S3_ENDPOINT_URL=http://minio:9000
