@@ -3,15 +3,15 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { Pool } from "pg";
 import PostgresAdapter from "@auth/pg-adapter";
-import { authConfig } from "./auth.config";
+import { authConfig as edgeConfig } from "./auth-edge";   // ← Import from edge file
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,                    // Spread edge config
+export const { handlers, signIn, signOut } = NextAuth({
+  ...edgeConfig,
   adapter: PostgresAdapter(pool),
 
   providers: [
@@ -19,19 +19,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
+        params: { prompt: "consent", access_type: "offline", response_type: "code" },
       },
     }),
   ],
 
   callbacks: {
-    ...authConfig.callbacks,        // Keep edge callbacks
+    ...edgeConfig.callbacks,
 
     async signIn({ user, account }) {
+      // Your existing signIn logic (unchanged)
       if (account?.provider === "google" && user.email) {
         try {
           const client = await pool.connect();
@@ -44,10 +41,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (existing.rows.length === 0) {
               await client.query("BEGIN");
               const orgName = user.name ? `${user.name.split(" ")[0]}'s Workspace` : "My Workspace";
-              const slug = user.email
-                .split("@")[0]
-                .replace(/[^a-z0-9]/gi, "-")
-                .toLowerCase() + "-" + Math.random().toString(36).slice(2, 6);
+              const slug =
+                user.email.split("@")[0].replace(/[^a-z0-9]/gi, "-").toLowerCase() +
+                "-" +
+                Math.random().toString(36).slice(2, 6);
 
               const orgResult = await client.query(
                 "INSERT INTO organizations (name, slug) VALUES ($1, $2) RETURNING id",
@@ -59,11 +56,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               await client.query(
                 `INSERT INTO users (google_id, email, full_name, avatar_url, organization_id, role)
                  VALUES ($1, $2, $3, $4, $5, 'org_admin')
-                 ON CONFLICT (email) DO UPDATE SET 
-                 google_id = $1, organization_id = $5, full_name = $3, avatar_url = $4`,
+                 ON CONFLICT (email) DO UPDATE SET google_id = $1, organization_id = $5, full_name = $3, avatar_url = $4`,
                 [account.providerAccountId, user.email, user.name, user.image, orgId]
               );
-
               await client.query("COMMIT");
             } else {
               await client.query(
@@ -75,31 +70,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             client.release();
           }
         } catch (err) {
-          console.error("signIn provisioning error:", err);
+          console.error("signIn error:", err);
         }
       }
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user?.email) {
         try {
           const result = await pool.query(
             "SELECT id, organization_id, role FROM users WHERE email = $1 AND deleted_at IS NULL LIMIT 1",
             [user.email]
           );
-
           if (result.rows.length > 0) {
-            const dbUser = result.rows[0];
-            token.userId = dbUser.id;
-            token.organizationId = dbUser.organization_id;
-            token.role = dbUser.role;
+            token.userId = result.rows[0].id;
+            token.organizationId = result.rows[0].organization_id;
+            token.role = result.rows[0].role;
           }
         } catch (err) {
-          console.error("JWT callback DB error:", err);
+          console.error("JWT callback error:", err);
         }
       }
       return token;
     },
   },
+
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 });
