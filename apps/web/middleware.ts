@@ -1,5 +1,4 @@
-// middleware.ts
-import { auth } from "@/lib/auth-edge";   // ← Important: Import from edge file
+import { auth } from "@/lib/auth-edge";   // ← Keep this
 import { NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = ["/", "/login", "/privacy", "/terms"];
