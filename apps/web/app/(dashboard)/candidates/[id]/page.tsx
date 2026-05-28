@@ -368,13 +368,20 @@ function FraudTab({ flags, candidateId }: { flags: any[]; candidateId: string })
         These are potential signals, not determinations.
       </div>
       {flags.map((flag) => {
-        const Icon = SEVERITY_ICON[flag.severity] ?? AlertTriangle;
-        const severityColor = {
+        const Icon = SEVERITY_ICON[severity] ?? AlertTriangle;
+        type Severity = "critical" | "high" | "medium" | "low";
+        
+        const severityColors: Record<Severity, string> = {
           critical: "text-red-600",
-          high:     "text-orange-600",
-          medium:   "text-amber-600",
-          low:      "text-zinc-500",
-        }[flag.severity] ?? "text-zinc-500";
+          high: "text-orange-600",
+          medium: "text-amber-600",
+          low: "text-blue-600",
+        };
+        
+        const severity = (flag.severity ?? "low") as Severity;
+        
+        const severityColor =
+          severityColors[severity] ?? severityColors.low;
 
         return (
           <div
