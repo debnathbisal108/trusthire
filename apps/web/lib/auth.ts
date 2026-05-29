@@ -2,7 +2,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { Pool } from "pg";
-import PostgresAdapter from "@auth/pg-adapter";
+// import PostgresAdapter from "@auth/pg-adapter";
 import { authConfig as edgeConfig } from "./auth-edge";
 
 // const pool = new Pool({
@@ -10,19 +10,19 @@ import { authConfig as edgeConfig } from "./auth-edge";
 //   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 // });
 
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  max: 5,                    // Reduced for Render free tier
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 15000,
-  // Add this to help with Render's environment
-  application_name: "trusthire-web",
-  keepAlive: true,
-});
+let _pool: Pool | null = null;
+function getPool(): Pool {
+  if (!_pool) {
+    _pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+      max: 5,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
+  }
+  return _pool;
+}
 
 async function getDbUser(email: string) {
   const { rows } = await getPool().query(
