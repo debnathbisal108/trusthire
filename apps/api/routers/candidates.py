@@ -42,7 +42,7 @@ MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 # LIST
 # ─────────────────────────────────────────────────────────────────────────────
 
-@router.get("/", response_model=CandidateListResponse)
+@router.get("", response_model=CandidateListResponse)
 async def list_candidates(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
@@ -108,7 +108,7 @@ async def list_candidates(
 # CREATE (with file upload)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@router.post("/", response_model=CandidateOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=CandidateOut, status_code=status.HTTP_201_CREATED)
 async def create_candidate(
     full_name: str = Form(..., min_length=2, max_length=255),
     email: Optional[str] = Form(None),
