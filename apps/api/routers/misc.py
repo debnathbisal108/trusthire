@@ -45,7 +45,7 @@ async def list_consents(
     return [ConsentOut.model_validate(r) for r in result.scalars().all()]
 
 
-@consent_router.post("/", response_model=ConsentOut, status_code=status.HTTP_201_CREATED)
+@consent_router.post("", response_model=ConsentOut, status_code=status.HTTP_201_CREATED)
 async def grant_candidate_consent(
     candidate_id: uuid.UUID,
     payload: ConsentGrant,
@@ -254,7 +254,7 @@ from ..schemas import NotificationOut
 notifications_router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
-@notifications_router.get("/", response_model=list[NotificationOut])
+@notifications_router.get("", response_model=list[NotificationOut])
 async def get_notifications(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
